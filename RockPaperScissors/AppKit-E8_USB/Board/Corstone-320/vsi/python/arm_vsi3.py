@@ -37,6 +37,7 @@ from sdsio import (
     CMD_PING,
     CMD_READ,
     CMD_WRITE,
+    SDSIO_VSI_VERSION,
     sdsio_manager,
 )
 
@@ -112,6 +113,9 @@ def _load_sdsio_server_config(base_dir: str):
         except Exception as _e:
             logger.error(f"Failed to load control YAML: {_e}")
 
+    if _ctrl_data:
+        logger.info(f"SDSIO configuration YAML: {_cfg_path}")
+
     _work_dir = _ctrl_data.get("workdir", base_dir) if _ctrl_data else base_dir
     _work_dir = path.normpath(path.join(base_dir, _work_dir)) if not path.isabs(_work_dir) else path.normpath(_work_dir)
     _play_list = _ctrl_data.get("play", None) if _ctrl_data else None
@@ -130,7 +134,7 @@ def _build_sdsio_request(command: int, sid: int = 0, argument: int = 0, data: by
     _req.extend(data)
     return _req
 
-
+logger.info(f"SDSIO VSI version {SDSIO_VSI_VERSION}")
 _work_dir, _auto_playback, _play_list = _load_sdsio_server_config(os.getcwd())
 Stream = sdsio_manager(
     work_dir=_work_dir,
@@ -151,10 +155,10 @@ def processCOMMAND(command):
     cmd = { 1: "CMD_OPEN", 2: "CMD_CLOSE", 3: "CMD_WRITE", 4: "CMD_READ", 5: "CMD_PING", 6: "CMD_FLAGS", 7: "CMD_INFO" }
 
     if not command in cmd:
-        logger.info(f"ERROR:    Unknown COMMAND: {command}.")
+        logger.error(f"ERROR:    Unknown COMMAND: {command}.")
         return 0
 
-    logger.info(f"Processing {cmd[command]}")
+    logger.debug(f"Processing {cmd[command]}")
 
     try:
         if command == CMD_OPEN:
@@ -207,14 +211,14 @@ def processCOMMAND(command):
 ## Initialize
 #  @return None
 def init():
-    logger.info("Python function init() called")
+    logger.debug("Python function init() called")
 
 
 ## Read interrupt request (the VSI IRQ Status Register)
 #  @return value value read (32-bit)
 def rdIRQ():
     global IRQ_Status
-    logger.info("Python function rdIRQ() called")
+    logger.debug("Python function rdIRQ() called")
 
     value = IRQ_Status
     logger.debug(f"Read interrupt request: {value}")
@@ -227,7 +231,7 @@ def rdIRQ():
 #  @return value value written (32-bit)
 def wrIRQ(value):
     global IRQ_Status
-    logger.info("Python function wrIRQ() called")
+    logger.debug("Python function wrIRQ() called")
 
     IRQ_Status = value
     logger.debug(f"Write interrupt request: {value}")
@@ -241,7 +245,7 @@ def wrIRQ(value):
 #  @return value value written (32-bit)
 def wrTimer(index, value):
     global Timer_Control, Timer_Interval
-    logger.info("Python function wrTimer() called")
+    logger.debug("Python function wrTimer() called")
 
     if index == 0:
         Timer_Control = value
@@ -256,7 +260,7 @@ def wrTimer(index, value):
 ## Timer event (called at Timer Overflow)
 #  @return None
 def timerEvent():
-    logger.info("Python function timerEvent() called")
+    logger.debug("Python function timerEvent() called")
 
 
 ## Write DMA registers (the VSI DMA Registers)
@@ -265,7 +269,7 @@ def timerEvent():
 #  @return value value written (32-bit)
 def wrDMA(index, value):
     global DMA_Control
-    logger.info("Python function wrDMA() called")
+    logger.debug("Python function wrDMA() called")
 
     if index == 0:
         DMA_Control = value
@@ -279,7 +283,7 @@ def wrDMA(index, value):
 #  @return data data read (bytearray)
 def rdDataDMA(size):
     global Data
-    logger.info("Python function rdDataDMA() called")
+    logger.debug("Python function rdDataDMA() called")
 
     n = min(len(Data), size)
     data = bytearray(size)
@@ -295,7 +299,7 @@ def rdDataDMA(size):
 #  @return None
 def wrDataDMA(data, size):
     global Data
-    logger.info("Python function wrDataDMA() called")
+    logger.debug("Python function wrDataDMA() called")
 
     Data = data
     logger.debug(f"Write data ({size} bytes)")
@@ -308,7 +312,7 @@ def wrDataDMA(data, size):
 #  @return value value read (32-bit)
 def rdRegs(index):
     global Timer_Control, COMMAND, STREAM_ID, ARGUMENT, FLAGS_SET, FLAGS_CLR
-    logger.info("Python function rdRegs() called")
+    logger.debug("Python function rdRegs() called")
 
     if   index == 0:
         value = COMMAND
@@ -338,7 +342,7 @@ def rdRegs(index):
 #  @return value value written (32-bit)
 def wrRegs(index, value):
     global COMMAND, STREAM_ID, ARGUMENT, FLAGS_SET, FLAGS_CLR
-    logger.info("Python function wrRegs() called")
+    logger.debug("Python function wrRegs() called")
 
     if   index == 0:
         COMMAND = processCOMMAND(value)
