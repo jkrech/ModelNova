@@ -23,12 +23,12 @@
 
 // Input Data block size, in bytes
 #ifndef ALGO_DATA_IN_BLOCK_SIZE
-#define ALGO_DATA_IN_BLOCK_SIZE         (ML_IMAGE_WIDTH * ML_IMAGE_HEIGHT * 3)
+#define ALGO_DATA_IN_BLOCK_SIZE         (ML_IMAGE_WIDTH * ML_IMAGE_HEIGHT * 3U)
 #endif
 
 // Output Data block size, in bytes
 #ifndef ALGO_DATA_OUT_BLOCK_SIZE
-#define ALGO_DATA_OUT_BLOCK_SIZE        (4 * sizeof(float))
+#define ALGO_DATA_OUT_BLOCK_SIZE        (4U * sizeof(float))
 #endif
 
 #endif
