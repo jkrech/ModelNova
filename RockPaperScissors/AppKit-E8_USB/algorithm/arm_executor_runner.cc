@@ -17,13 +17,16 @@
 #include <memory>
 #include <vector>
 #include "RTE_Components.h"
-#include "cmsis_vstream.h"
 #include "config_video.h"
 #include "image_processing_func.h"
 #include CMSIS_device_header
 #include "arm_memory_allocator.h"
-#include "profiler.h"
 #include "arm_executor_runner.h"  /* runner_output_label_t, RunnerContext (shared with sds_algorithm_user.cpp) */
+
+#ifndef  SIMULATOR
+#include "cmsis_vstream.h"
+#include "profiler.h"
+#endif
 
 // AC6 (armclang) doesn't have unistd.h in bare-metal mode
 // Use stdlib exit() instead of _exit() for AC6
@@ -84,7 +87,9 @@ using executorch::runtime::TensorInfo;
 #define ET_ARM_BAREMETAL_METHOD_ALLOCATOR_POOL_SIZE (60 * 1024 * 1024)
 #endif
 
+#ifndef SIMULATOR
 extern vStreamDriver_t Driver_vStreamVideoOut;
+#endif
 
 /**
 * Implementation of the et_pal_<funcs>()
@@ -155,8 +160,10 @@ typedef runner_output_label_t output_label_t;
  * ============================================================================
  */
 
+#ifndef SIMULATOR
 /** \brief Video output stream driver */
 extern vStreamDriver_t Driver_vStreamVideoOut;
+#endif
 
 /* ============================================================================
  * Global Variables

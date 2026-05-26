@@ -23,7 +23,6 @@
 #include <vector>
 #include <utility>
 
-#include "cmsis_vstream.h"
 #include "config_video.h"          /* DISPLAY_IMAGE_SIZE, DISPLAY_FRAME_BUF_ATTRIBUTE */
 #include "algorithm_config.h"
 #include "algorithm.h"
@@ -31,7 +30,11 @@
 #include "arm_executor_runner.h"
 #include "image_processing_func.h"
 #include "model_pte.h"
+
+#ifndef  SIMULATOR
+#include "cmsis_vstream.h"
 #include "profiler.h"
+#endif
 
 #include <executorch/extension/data_loader/buffer_data_loader.h>
 #include <executorch/runtime/executor/program.h>
@@ -61,6 +64,7 @@ static uint8_t program_result_storage[sizeof(Result<Program>)]
 static BufferDataLoader *loader_ptr  = nullptr;
 static Program          *program_ptr = nullptr;
 
+#ifndef SIMULATOR
 /* Reference to the underlying CMSIS vStream VideoOut driver */
 extern vStreamDriver_t Driver_vStreamVideoOut;
 #define vStream_VideoOut  (&Driver_vStreamVideoOut)
@@ -69,6 +73,7 @@ extern vStreamDriver_t Driver_vStreamVideoOut;
 static void VideoOut_Event_Callback(uint32_t event) {
     (void)event;
 }
+#endif
 
 /* ============================================================================
  * InitAlgorithm
@@ -82,6 +87,7 @@ static void VideoOut_Event_Callback(uint32_t event) {
 */
 int32_t InitAlgorithm (void) {
 
+#ifndef SIMULATOR
     /* ---- Video Output Stream ---- */
     if (vStream_VideoOut->Initialize(VideoOut_Event_Callback) != VSTREAM_OK) {
         printf("Failed to initialise video output driver\n");
@@ -92,6 +98,7 @@ int32_t InitAlgorithm (void) {
         printf("Failed to set buffer for video output\n");
         return -1;
     }
+#endif
 
     /* ---- Model Loading ---- */
     size_t pte_size = sizeof(model_pte);
@@ -120,6 +127,21 @@ int32_t InitAlgorithm (void) {
 }
 
 /* ============================================================================
+ * ResetAlgorithm
+ * ============================================================================
+ */
+
+/**
+  \fn           void ResetAlgorithm (void)
+  \brief        Reset algorithm under test before starting a playback run.
+*/
+void ResetAlgorithm (void) {
+    // No reset action is required for this image classification algorithm
+    // because the ExecuTorch runner holds no mutable inter-frame state;
+    // each call to ExecuteAlgorithm() operates independently on its input buffer.
+}
+
+/* ============================================================================
  * ExecuteAlgorithm
  * ============================================================================
  */
@@ -136,8 +158,10 @@ int32_t InitAlgorithm (void) {
 int32_t ExecuteAlgorithm(uint8_t *in_buf, uint32_t in_num,
                          uint8_t *out_buf, uint32_t out_num) {
 
+#ifndef SIMULATOR
     vStreamStatus_t v_status;
     uint8_t        *outFrame;
+#endif
 
     /* Clear output buffer */
     memset(out_buf, 0, out_num);
@@ -179,6 +203,7 @@ int32_t ExecuteAlgorithm(uint8_t *in_buf, uint32_t in_num,
     uint32_t display_time = profiler_start();
 #endif
 
+#ifndef SIMULATOR
     /* Wait for previous video output frame to finish */
     do {
         v_status = vStream_VideoOut->GetStatus();
@@ -215,6 +240,7 @@ int32_t ExecuteAlgorithm(uint8_t *in_buf, uint32_t in_num,
     if (vStream_VideoOut->Start(VSTREAM_MODE_SINGLE) != VSTREAM_OK) {
         printf("Failed to start video output\n");
     }
+#endif
 
     return 0;
 }

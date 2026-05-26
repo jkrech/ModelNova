@@ -21,7 +21,10 @@
 #include <string.h>
 
 #include "cmsis_os2.h"
+
+#ifndef  SIMULATOR
 #include "cmsis_vstream.h"
+#endif
 
 #include "sds.h"
 #include "algorithm_config.h"
@@ -30,6 +33,7 @@
 #include "app_setup.h"
 #include "image_processing_func.h"
 
+#ifndef  SIMULATOR
 /* Reference to the underlying CMSIS vStream VideoIn driver */
 extern vStreamDriver_t          Driver_vStreamVideoIn;
 #define vStream_VideoIn       (&Driver_vStreamVideoIn)
@@ -62,6 +66,7 @@ void VideoIn_Event_Callback (uint32_t event) {
 void VideoOut_Event_Callback (uint32_t event) {
   (void)event;
 }
+#endif
 
 /**
   \fn           int32_t InitInputData (void)
@@ -70,6 +75,7 @@ void VideoOut_Event_Callback (uint32_t event) {
 */
 int32_t InitInputData (void) {
 
+#ifndef SIMULATOR
   tid_algo = osThreadGetId();
 
   /* Initialize Video Input Stream */
@@ -83,6 +89,7 @@ int32_t InitInputData (void) {
     SDS_PRINTF("Failed to set buffer for video input\n");
     return -1;
   }
+#endif
 
   return 0;
 }
@@ -93,6 +100,7 @@ int32_t InitInputData (void) {
 */
 void DiscardInputData (void) {
 
+#ifndef SIMULATOR
   /* Check for new video input frame */
   uint32_t flags = osThreadFlagsWait(0x01, osFlagsWaitAny, 0U);
 
@@ -104,6 +112,7 @@ void DiscardInputData (void) {
       SDS_PRINTF("Failed to release video input frame\n");
     }
   }
+#endif
 }
 
 /**
@@ -115,6 +124,7 @@ void DiscardInputData (void) {
   \return       number of data bytes returned; -1 on error
 */
 int32_t GetInputData (uint8_t *buf, uint32_t max_len) {
+#ifndef SIMULATOR
   uint8_t *inFrame;
 
   // Check input parameters
@@ -161,8 +171,13 @@ int32_t GetInputData (uint8_t *buf, uint32_t max_len) {
   }
 
   return ALGO_DATA_IN_BLOCK_SIZE;
+#else
+  return 0;
+#endif
 }
 
+
+#ifndef SIMULATOR
 /*
   Converts camera frame and copies it to RGB image buffer.
 
@@ -278,3 +293,4 @@ static void convert_frame_to_rgb(uint8_t *inFrame) {
       #endif
     #endif
 }
+#endif
