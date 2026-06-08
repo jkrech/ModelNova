@@ -16,6 +16,10 @@
 #include <ethosu_driver.h>
 #include <executorch/runtime/platform/log.h>
 #include <pmu_ethosu.h>
+#if    !defined(SIMULATOR) && defined(USE_SEGGER_SYSVIEW)
+#undef ET_LOG
+#include "sysview_log.h"
+#endif
 
 namespace {
 
