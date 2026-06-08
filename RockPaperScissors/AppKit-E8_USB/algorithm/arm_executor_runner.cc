@@ -21,6 +21,7 @@
 #include "image_processing_func.h"
 #include CMSIS_device_header
 #include "arm_memory_allocator.h"
+#include "arm_perf_monitor.h"
 #include "arm_executor_runner.h"  /* runner_output_label_t, RunnerContext (shared with sds_algorithm_user.cpp) */
 
 #ifndef  SIMULATOR
@@ -1012,6 +1013,10 @@ bool verify_result(RunnerContext& ctx, const void* model_pte) {
 bool run_inference(RunnerContext& ctx) {
     Error status = Error::Ok;
     int n = 0;
+
+#ifdef USE_PERFORMANCE_MONITOR
+    StartMeasurements();
+#endif
     for (n = 0; n < num_inferences; n++) {
 
         std::vector<std::pair<char*, size_t>> input_buffers;
@@ -1044,6 +1049,9 @@ bool run_inference(RunnerContext& ctx) {
                profiler_cycles_to_ms(inference_time, CPU_FREQ_HZ));
 #endif
     }
+#ifdef USE_PERFORMANCE_MONITOR
+    StopMeasurements(num_inferences);
+#endif
 
     ET_CHECK_MSG(status == Error::Ok,
                  "Execution of method %s failed with status 0x%" PRIx32,
