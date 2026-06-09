@@ -13,7 +13,7 @@ sdsio:
   
   # Human readable labels for sdsFlag bits use by VS Code extension
   flag-info:
-    - 0: INFERENCE START/STOP
+    - 0: RECORD CAMERA
     - 1: HEALTH CHECK
     - 2: CONNECTIVITY CHECK
     - 3: INFERENCE TEST START/STOP
