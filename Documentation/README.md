@@ -106,7 +106,6 @@ The dataset is automatically divided into:
 - Training dataset
 - Validation dataset
 
-
 ### Pick a Model
 
 In the **Pick a Model** tab, users select a base model from the **ModelNova Cloud Model Registry**.
@@ -157,7 +156,6 @@ For ALIF devices, the model must be optimized for:
 - **Ethos-U NPU acceleration**
 
 This ensures efficient execution on low-power embedded devices.
-
 
 ### View Training Report
 

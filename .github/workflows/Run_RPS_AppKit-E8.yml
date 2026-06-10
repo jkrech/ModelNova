@@ -14,7 +14,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-name: HIL RockPaperScissors AppKit-E8
+name: Run on AppKit-E8 Hardware
 on:
   workflow_dispatch:
   pull_request:
