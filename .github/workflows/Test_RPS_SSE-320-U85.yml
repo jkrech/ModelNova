@@ -76,9 +76,10 @@ jobs:
       - name: Run on FVP
         working-directory: ./RockPaperScissors/AppKit-E8_USB
         run: |
-          dir ./Board/Corstone-320/fvp_config.txt | 
-          dir ./out/AlgorithmTest/SSE-320-U85/Debug/AlgorithmTest.axf |
-          FVP_Corstone_SSE-320 -f ./Board/Corstone-320/fvp_config.txt -a ./out/AlgorithmTest/SSE-320-U85/Debug/AlgorithmTest.axf --simlimit 120 || true
+          dir ./Board/Corstone-320/fvp_config.txt
+          dir ./out/AlgorithmTest/SSE-320-U85/Debug/AlgorithmTest.axf
+          FVP_Corstone_SSE-320 -f ./Board/Corstone-320/fvp_config.txt -a ./out/AlgorithmTest/SSE-320-U85/Debug/AlgorithmTest.axf --simlimit 120
+          dir ./algorithm/SDS Recordings/sdsio.log
 
 #     - name: Print log file of the FVP VSI3 SDSIO service
 #       run: |
@@ -89,6 +90,6 @@ jobs:
         with:
           name: RPS_SSE-320-U85_FVP
           path: |
-            ./RockPaperScissors/AppKit-E8_USB/out  |
-            ./RockPaperScissors/AppKit-E8_USB/algorithm/SDS Recordings/*.p.sds   |
-            ./RockPaperScissors/AppKit-E8_USB/algorithm/SDS Recordings/sdsio.log |
+            ./RockPaperScissors/AppKit-E8_USB/out
+            ./RockPaperScissors/AppKit-E8_USB/algorithm/SDS Recordings/*.p.sds
+            ./RockPaperScissors/AppKit-E8_USB/algorithm/SDS Recordings/sdsio.log
