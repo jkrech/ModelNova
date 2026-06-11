@@ -76,10 +76,8 @@ jobs:
       - name: Run on FVP
         working-directory: ./RockPaperScissors/AppKit-E8_USB
         run: |
-          dir ./Board/Corstone-320/fvp_config.txt
-          dir ./out/AlgorithmTest/SSE-320-U85/Debug/AlgorithmTest.axf
-          FVP_Corstone_SSE-320 -f ./Board/Corstone-320/fvp_config.txt -a ./out/AlgorithmTest/SSE-320-U85/Debug/AlgorithmTest.axf --simlimit 120
-          dir ./algorithm/SDS Recordings/sdsio.log
+          FVP_Corstone_SSE-320 -f ./Board/Corstone-320/fvp_config.txt -a ./out/AlgorithmTest/SSE-320-U85/Debug/AlgorithmTest.axf --simlimit 120 >fvp.log
+          type fvp.log
 
 #     - name: Print log file of the FVP VSI3 SDSIO service
 #       run: |
