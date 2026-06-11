@@ -14,7 +14,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-name: Run on AppKit-E8 Hardware
+name: Run RPS on AppKit-E8 Hardware
 on:
   workflow_dispatch:
   pull_request:
@@ -46,10 +46,14 @@ jobs:
           name: RPS_AppKit-E8-U85_HIL_V3
           path: ./RockPaperScissors/AppKit-E8_USB/out
 
-      - name: Flash and run using pyOCD
+      - name: Flash using pyOCD
         working-directory: ./RockPaperScissors/AppKit-E8_USB/out
         run: |
           pyocd load --uid L96807771A --cbuild-run SDS+AppKit-E8-U85.cbuild-run.yml
+
+      - name: Run using pyOCD
+        working-directory: ./RockPaperScissors/AppKit-E8_USB/out
+        run: |
           pyocd run --uid L96807771A --cbuild-run SDS+AppKit-E8-U85.cbuild-run.yml -O reset_type=hardware --timelimit 10
 
       - name: Stop the SDSIO server on the Raspberry Pi

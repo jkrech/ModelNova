@@ -14,7 +14,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-name: Build and Run on FVP Simulation
+name: Build and Run RPS on Simulator
 on:
   workflow_dispatch:
   pull_request:

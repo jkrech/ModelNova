@@ -14,7 +14,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-name: Build Context Variants
+name: Build RPS Context Variants
 on:
   workflow_dispatch:
   pull_request:
