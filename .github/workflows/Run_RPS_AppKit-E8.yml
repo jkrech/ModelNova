@@ -17,13 +17,14 @@
 name: Run RPS on AppKit-E8 Hardware
 on:
   workflow_dispatch:
-  pull_request:
-    branches: [v3]
-  push:
+  workflow_run:
+    workflows: ["Build RPS for AppKit-E8 Hardware"]
+    types: [completed]
     branches: [v3]
 
 jobs:
   CI:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: [self-hosted, rsp-p5-01]
 
     steps:
@@ -33,6 +34,15 @@ jobs:
           ref: v3
 
       - name: Download Build Artifact
+        if: ${{ github.event_name == 'workflow_run' }}
+        uses: dawidd6/action-download-artifact@v17
+        with:
+          run_id: ${{ github.event.workflow_run.id }}
+          name: RPS_AppKit-E8-U85_HIL_V3
+          path: ./RockPaperScissors/AppKit-E8_USB/out
+
+      - name: Download Build Artifact (manual dispatch fallback)
+        if: ${{ github.event_name == 'workflow_dispatch' }}
         uses: dawidd6/action-download-artifact@v17
         with:
           workflow: Build_RPS_AppKit-E8.yml
@@ -42,11 +52,11 @@ jobs:
       - name: Start the SDSIO server on the Raspberry Pi
         working-directory: ./RockPaperScissors/AppKit-E8_USB
         run: |
-          if ! pgrep -f "sdsio-server.py usb" > /dev/null; then
+          if ! pgrep -f "sdsio-server.py --control SDS.sdsio.yml" > /dev/null; then
               nohup python ~/../../SDS-Framework/utilities/sdsio-server.py --control SDS.sdsio.yml > ./sdsio-server.log 2>&1 &
               sleep 2
           fi
-          pgrep -f "sdsio-server.py usb"
+          pgrep -f "sdsio-server.py --control SDS.sdsio.yml"
           tail -n 20 ./sdsio-server.log || true
 
       - name: Flash using pyOCD
@@ -61,7 +71,7 @@ jobs:
 
       - name: Stop the SDSIO server on the Raspberry Pi
         run: |
-          PIDS=$(pgrep -f "sdsio-server.py usb") || true
+          PIDS=$(pgrep -f "sdsio-server.py --control SDS.sdsio.yml") || true
           if [ -n "$PIDS" ]; then
               echo "Stopping SDSIO server (PIDs: $PIDS)"
               kill $PIDS
