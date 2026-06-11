@@ -37,7 +37,7 @@ jobs:
         with:
           python-version: '3.13'
 
-      - name: Install Python Requirements
+      - name: Install Python requirements
         run: pip install -r requirements.txt
       
       - name: Activate vcpkg
@@ -48,7 +48,6 @@ jobs:
 
       - name: Activate Arm tool license
         uses: ARM-software/cmsis-actions/armlm@v1
-
 
       - name: Initialize CMSIS pack root folder
         run: |
@@ -75,7 +74,7 @@ jobs:
       - name: Run on FVP
         working-directory: ./RockPaperScissors/AppKit-E8_USB
         run: |
-          FVP_Corstone_SSE-320 -f ./Board/Corstone-320/fvp_config.txt -a ./out/AlgorithmTest/SSE-320-U85/Debug/AlgorithmTest.axf --simlimit 12 || true
+          FVP_Corstone_SSE-320 -f ./Board/Corstone-320/fvp_config.txt -a ./out/AlgorithmTest/SSE-320-U85/Debug/AlgorithmTest.axf --simlimit 120 || true
 
       - name: Print log file of the FVP VSI3 SDSIO service
         working-directory: ./RockPaperScissors/AppKit-E8_USB
