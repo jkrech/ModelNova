@@ -27,17 +27,10 @@ jobs:
     runs-on: [self-hosted, rsp-p5-01]
 
     steps:
-      - name: Start the SDSIO server on the Raspberry Pi
-        run: |
-          if ! pgrep -f "sdsio-server.py usb" > /dev/null; then
-              nohup python ~/SDS-Framework/utilities/sdsio-server.py usb > ~/SDS-Framework/utilities/sdsio-server.log 2>&1 &
-              sleep 2
-          fi
-          pgrep -f "sdsio-server.py usb"
-          tail -n 20 ~/SDS-Framework/utilities/sdsio-server.log || true
-
       - name: Checkout repository
         uses: actions/checkout@v6
+        with:
+          ref: v3
 
       - name: Download Build Artifact
         uses: dawidd6/action-download-artifact@v17
@@ -45,6 +38,16 @@ jobs:
           workflow: Build_RPS_AppKit-E8.yml
           name: RPS_AppKit-E8-U85_HIL_V3
           path: ./RockPaperScissors/AppKit-E8_USB/out
+
+      - name: Start the SDSIO server on the Raspberry Pi
+        working-directory: ./RockPaperScissors/AppKit-E8_USB/out
+        run: |
+          if ! pgrep -f "sdsio-server.py usb" > /dev/null; then
+              nohup python ~/SDS-Framework/utilities/sdsio-server.py --control SDS.sdsio.yml > ~/SDS-Framework/utilities/sdsio-server.log 2>&1 &
+              sleep 2
+          fi
+          pgrep -f "sdsio-server.py usb"
+          tail -n 20 ~/SDS-Framework/utilities/sdsio-server.log || true
 
       - name: Flash using pyOCD
         working-directory: ./RockPaperScissors/AppKit-E8_USB/out
