@@ -16,25 +16,21 @@
  * limitations under the License.
  */
 
+#include "data_in.h"
+
+#ifndef  SIMULATOR                      // If hardware target is selected
+
 #include <stddef.h>
 #include <stdio.h>
 #include <string.h>
-
 #include "cmsis_os2.h"
-
-#ifndef  SIMULATOR
 #include "cmsis_vstream.h"
-#endif
-
 #include "sds.h"
 #include "sds_main.h"
 #include "algorithm_config.h"
-#include "data_in.h"
-
 #include "app_setup.h"
 #include "image_processing_func.h"
 
-#ifndef  SIMULATOR
 #ifdef   USE_SEGGER_SYSVIEW
 #include "SEGGER_SYSVIEW.h"
 #include "sysview_markers.h"
@@ -72,7 +68,6 @@ void VideoIn_Event_Callback (uint32_t event) {
 void VideoOut_Event_Callback (uint32_t event) {
   (void)event;
 }
-#endif
 
 /**
   \fn           int32_t InitInputData (void)
@@ -81,7 +76,6 @@ void VideoOut_Event_Callback (uint32_t event) {
 */
 int32_t InitInputData (void) {
 
-#ifndef SIMULATOR
 #ifdef  USE_SEGGER_SYSVIEW
   // Set an initial marker with ID 0xFF to initialize marker tracking. This marker is ignored by SystemView.
   SEGGER_SYSVIEW_NameMarker(0xFFU,                        "Reserved");
@@ -105,7 +99,6 @@ int32_t InitInputData (void) {
     SDS_PRINTF("Failed to set buffer for video input\n");
     return -1;
   }
-#endif
 
   return 0;
 }
@@ -116,19 +109,17 @@ int32_t InitInputData (void) {
 */
 void DiscardInputData (void) {
 
-#ifndef SIMULATOR
   /* Check for new video input frame */
-  uint32_t flags = osThreadFlagsWait(0x01, osFlagsWaitAny, 0U);
+  uint32_t flags = osThreadFlagsWait(0x01U, osFlagsWaitAny, 0U);
 
   if (((flags & osFlagsError) == 0U) && // If not an error and
       ((flags & 0x01)         != 0U)) { // if flag is set
 
-    /* Release input frame */
+    /* Release video input frame */
     if (vStream_VideoIn->ReleaseBlock() != VSTREAM_OK) {
       SDS_PRINTF("Failed to release video input frame\n");
     }
   }
-#endif
 }
 
 /**
@@ -140,7 +131,6 @@ void DiscardInputData (void) {
   \return       number of data bytes returned; -1 on error
 */
 int32_t GetInputData (uint8_t *buf, uint32_t max_len) {
-#ifndef SIMULATOR
   int32_t  ret;
   uint8_t *inFrame;
 
@@ -234,13 +224,8 @@ int32_t GetInputData (uint8_t *buf, uint32_t max_len) {
 #endif
 
   return ALGO_DATA_IN_BLOCK_SIZE;
-#else
-  return 0;
-#endif
 }
 
-
-#ifndef SIMULATOR
 /*
   Converts camera frame and copies it to RGB image buffer.
 
@@ -356,4 +341,9 @@ static void convert_frame_to_rgb(uint8_t *inFrame) {
       #endif
     #endif
 }
+
+#else                                   // If simulator target is selected
+int32_t InitInputData    (void) { return -1; }
+void    DiscardInputData (void) { }
+int32_t GetInputData     (uint8_t *buf, uint32_t max_len) { return -1; }
 #endif
