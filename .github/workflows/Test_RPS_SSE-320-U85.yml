@@ -37,6 +37,9 @@ jobs:
         with:
           python-version: '3.13'
 
+      - name: Install Python Requirements
+        run: pip install -r requirements.txt
+      
       - name: Activate vcpkg
         uses: ARM-software/cmsis-actions/vcpkg@v1
         with:
@@ -46,10 +49,6 @@ jobs:
       - name: Activate Arm tool license
         uses: ARM-software/cmsis-actions/armlm@v1
 
-      - name: Check FVP
-        working-directory: ./RockPaperScissors/AppKit-E8_USB
-        run: |
-          FVP_Corstone_SSE-320 --version
 
       - name: Initialize CMSIS pack root folder
         run: |
@@ -65,7 +64,7 @@ jobs:
       - name: Add Beta packs
         working-directory: ./
         run: |
-          cpackget add ./packs/PyTorch.ExecuTorch.1.1.0-rc1-build.12/PyTorch.ExecuTorch.pdsc --agree-embedded-license |
+          cpackget add ./packs/PyTorch.ExecuTorch.1.1.0-rc1-build.12/PyTorch.ExecuTorch.pdsc --agree-embedded-license
           cpackget add ./packs/AlifSemiconductor.Ensemble.2.2.0-dev8+g560eb47.pack --agree-embedded-license
 
       - name: Build the target-set
@@ -73,21 +72,15 @@ jobs:
         run: |
           cbuild SDS.csolution.yml --active SSE-320-U85 --packs
 
-      - name: Run on FVP without VSI3 SDSIO service
-        working-directory: ./RockPaperScissors/AppKit-E8_USB
-        run: |
-          FVP_Corstone_SSE-320 -f ./Board/Corstone-320/fvp_config2.txt -a ./out/AlgorithmTest/SSE-320-U85/Debug/AlgorithmTest.axf --simlimit 10 >fvp.log
-          type fvp.log
-
       - name: Run on FVP
         working-directory: ./RockPaperScissors/AppKit-E8_USB
         run: |
-          FVP_Corstone_SSE-320 -f ./Board/Corstone-320/fvp_config.txt -a ./out/AlgorithmTest/SSE-320-U85/Debug/AlgorithmTest.axf --simlimit 120 >fvp.log || true
+          FVP_Corstone_SSE-320 -f ./Board/Corstone-320/fvp_config.txt -a ./out/AlgorithmTest/SSE-320-U85/Debug/AlgorithmTest.axf --simlimit 120 || true
 
       - name: Print log file of the FVP VSI3 SDSIO service
         working-directory: ./RockPaperScissors/AppKit-E8_USB
         run: |
-          type fvp.log
+          type "./algorithm/SDS Recordings/sdsio.log"
 
       - name: Upload output of the built target-set
         uses: actions/upload-artifact@v7
@@ -95,5 +88,5 @@ jobs:
           name: RPS_SSE-320-U85_FVP
           path: |
             ./RockPaperScissors/AppKit-E8_USB/out
-            ./RockPaperScissors/AppKit-E8_USB/algorithm/SDS Recordings/*.p.sds
-            ./RockPaperScissors/AppKit-E8_USB/algorithm/SDS Recordings/sdsio.log
+            "./RockPaperScissors/AppKit-E8_USB/algorithm/SDS Recordings/*.p.sds"
+            "./RockPaperScissors/AppKit-E8_USB/algorithm/SDS Recordings/sdsio.log"
