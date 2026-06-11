@@ -40,24 +40,24 @@ jobs:
           path: ./RockPaperScissors/AppKit-E8_USB/out
 
       - name: Start the SDSIO server on the Raspberry Pi
-        working-directory: ./RockPaperScissors/AppKit-E8_USB/out
+        working-directory: ./RockPaperScissors/AppKit-E8_USB
         run: |
           if ! pgrep -f "sdsio-server.py usb" > /dev/null; then
-              nohup python ~/SDS-Framework/utilities/sdsio-server.py --control SDS.sdsio.yml > ~/SDS-Framework/utilities/sdsio-server.log 2>&1 &
+              nohup python ~/../../SDS-Framework/utilities/sdsio-server.py --control SDS.sdsio.yml > ./sdsio-server.log 2>&1 &
               sleep 2
           fi
           pgrep -f "sdsio-server.py usb"
-          tail -n 20 ~/SDS-Framework/utilities/sdsio-server.log || true
+          tail -n 20 ./sdsio-server.log || true
 
       - name: Flash using pyOCD
-        working-directory: ./RockPaperScissors/AppKit-E8_USB/out
+        working-directory: ./RockPaperScissors/AppKit-E8_USB
         run: |
-          pyocd load --uid L96807771A --cbuild-run SDS+AppKit-E8-U85.cbuild-run.yml
+          pyocd load --uid L96807771A --cbuild-run ./out/SDS+AppKit-E8-U85.cbuild-run.yml
 
       - name: Run using pyOCD
-        working-directory: ./RockPaperScissors/AppKit-E8_USB/out
+        working-directory: ./RockPaperScissors/AppKit-E8_USB
         run: |
-          pyocd run --uid L96807771A --cbuild-run SDS+AppKit-E8-U85.cbuild-run.yml -O reset_type=hardware --timelimit 10
+          pyocd run --uid L96807771A --cbuild-run ./out/SDS+AppKit-E8-U85.cbuild-run.yml -O reset_type=hardware --timelimit 10
 
       - name: Stop the SDSIO server on the Raspberry Pi
         run: |
@@ -70,5 +70,6 @@ jobs:
           fi
 
       - name: Show content of the sdsio-server.log file
+        working-directory: ./RockPaperScissors/AppKit-E8_USB
         run: |        
-          cat ~/SDS-Framework/utilities/sdsio-server.log
+          cat ./sdsio-server.log
