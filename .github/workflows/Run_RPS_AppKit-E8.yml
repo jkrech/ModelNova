@@ -28,7 +28,7 @@ permissions:
 
 jobs:
   CI:
-    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'v3') }}
     runs-on: [self-hosted, rsp-p5-01]
 
     steps:
