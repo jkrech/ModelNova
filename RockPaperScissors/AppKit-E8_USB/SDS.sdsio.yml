@@ -6,6 +6,8 @@ sdsio:
 
   # Data stream information used by VS Code extension
   streams:
+    - name: Camera
+      view: video
     - name: ML_In
       view: video
     - name: ML_Out
@@ -13,11 +15,7 @@ sdsio:
   
   # Human readable labels for sdsFlag bits use by VS Code extension
   flag-info:
-    - 0: RECORD CAMERA
-    - 1: HEALTH CHECK
-    - 2: CONNECTIVITY CHECK
-    - 3: INFERENCE TEST START/STOP
-    - 4: DATA CAPTURE START/STOP
+    - 0: Record Camera
 
   # Defines a playback test sequence
   play:
