@@ -86,3 +86,22 @@ solution:
   # List related projects.
   projects:
     - project: algorithm/AlgorithmTest.cproject.yml
+
+  mlops:
+    description: ML model for detecting Rock/Paper/Scissors images
+    npu:
+      type: Ethos-U85 # select NPU as DFP has multiple
+    vela:
+      system: RTSS_HE_SRAM_MRAM # system configuration from INI file
+      memory: Shared_Sram # memory configuration from INI file
+      ini: .cmsis/ensemble_vela.ini
+    #     misc: x # string with additional options for Vela
+    model:
+      clayer: $AI-Layer$ # path to layer or variable
+      name: RPS # optional model name (default Algorithm), serves as namespace
+    hardware:
+      # hardware target for testing
+      target: AppKit-E8-U85@HIL # explicit target-type name (default: first target-type)
+    simulator:
+      # simulator target for testing
+      target: SSE-320-U85       # explicit target-type name (default: last target-type, check if debugger name: Arm-FVP)

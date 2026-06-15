@@ -9,28 +9,38 @@ This repository shows how to build **Edge AI applications with Cortex-M/Ethos-U-
 
 ## Quick Start
 
-The [RockPaperScissors](./Documentation/README.md) project implements an AI model that detects [three hand gestures](https://en.wikipedia.org/wiki/Rock_paper_scissors) ([RPS_cls_dataset](./RockPaperScissors/RPS_cls_dataset/) provides test data). The [`AppKit-E8_USB/SDS.csolution.yml`](./RockPaperScissors/AppKit-E8_USB/SDS.csolution.yml) project uses the SDS framework for testing the AI model on the Alif AppKit-E8 hardware or an Arm FVP simulation model.
+The [RockPaperScissors (RPS)](./Documentation/README.md) project implements an AI model that detects [three hand gestures](https://en.wikipedia.org/wiki/Rock_paper_scissors) ([RPS_cls_dataset](./RockPaperScissors/RPS_cls_dataset/) provides test data). The [`AppKit-E8_USB/SDS.csolution.yml`](./RockPaperScissors/AppKit-E8_USB/SDS.csolution.yml) project uses the SDS framework for testing the AI model on the Alif AppKit-E8 hardware or an Arm FVP simulation model.
 
 ### Keil MDK
 
-1. Install [Keil Studio for VS Code](https://marketplace.visualstudio.com/items?itemName=Arm.keil-studio-pack) from the VS Code marketplace.
+1. Install [Keil Studio for VS Code](https://marketplace.visualstudio.com/items?itemName=Arm.keil-studio-pack) and [Arm SDS for VS Code](https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-sds) from the VS Code marketplace.
 2. Clone this repository (for example using [Git in VS Code](https://code.visualstudio.com/docs/sourcecontrol/intro-to-git)) or download the ZIP file. Then open the base folder in VS Code.
 3. Open the [CMSIS View](https://mdk-packs.github.io/vscode-cmsis-solution-docs/userinterface.html#2-main-area-of-the-cmsis-view) in VS Code, use *Open Solution in Workspace* (... menu), and choose `RockPaperScissors/AppKit-E8_USB/SDS.csolution.yml` to open the project.
 4. The related tools and software packs are downloaded and installed. Review progress with *View - Output - CMSIS Solution*.
-5. In the CMSIS view, use the [Action buttons](https://github.com/ARM-software/vscode-cmsis-csolution?tab=readme-ov-file#action-buttons) to build, load, and debug the example on the hardware.
+5. In the CMSIS view, use the [Action buttons](https://github.com/ARM-software/vscode-cmsis-csolution?tab=readme-ov-file#action-buttons) to build, load, and debug the example to the [target hardware](./Documentation/README.md#target-hardware).
 
 > [!TIP]
 > If you are new to Alif devices and boards, start with the `Blink_HP` example project using *Create Solution* with the board `Alif AppKit-E8-AIML`.
 
-## Development Steps
+## Application
+
+The diagram below illustrates the RPS application architecture. During algorithm development, the [SDS-Framework](https://www.keil.arm.com/packs/sds-arm) supports recording and playback of data streams for analysis and ML model training.
+
+![Application Structure](./Documentation/image/Application-Structure.png "Application Structure")
+
+### Development Steps
 
 **Create Classic Embedded Application:**
 
 1. [Create the input interface](./Documentation/README.md#input-interface-and-signal-conditioning), add signal conditioning, and start capturing data for ML model training.
-2. [Select an AI model](./Documentation/README.md#create-ai-model), then use the captured data for training, analysis, and creation of the optimized ML model.
-3. [Integrate the AI model](./Documentation/README.md#integrate-ai-model) into the SDS framework and analyze performance.
+2. [Select an ML model](./Documentation/README.md#create-ml-model), then use the captured data for training, analysis, and creation of the optimized ML model.
+3. [Integrate the ML model](./Documentation/README.md#integrate-ml-model) into the SDS framework and analyze performance.
 
 **Test Embedded Application:**
+
+1. [Arm SDS for VS Code](https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-sds) lets you capture the various data streams of the application in [SDS data files](https://arm-software.github.io/SDS-Framework/main/overview.html) for analysis.
+    ![SDS Data View](./Documentation/image/Arm_SDS.png)
+2. The [SDS.sdsio.yml](./RockPaperScissors/AppKit-E8_USB/SDS.sdsio.yml) configuration file defines `play:` steps for regression testing for example with [Contiguous Integration (CI)](#contiguous-integration-ci)
 
 **Create ML Model:**
 
@@ -41,7 +51,7 @@ The [RockPaperScissors](./Documentation/README.md) project implements an AI mode
 ### ModelNova Fusion Studio
 
 1. Download and install [ModelNova Fusion Studio](https://modelnova.ai/fusion-studio-beta).
-2. Launch the application and login to the application using the PAT from the **Get it from here** button 
+2. Launch the application and login to the application using the PAT from the **Get it from here** button
 
     ![ModelNova Fusion Studio Launch Screen](./Documentation/image/login_screen.png "Login Screen")
 
@@ -62,17 +72,17 @@ The [RockPaperScissors](./Documentation/README.md) project implements an AI mode
 
 ## Contiguous Integration (CI)
 
-This repository uses CI Workflows listed below to build artifacts and verify projects. Examples are verified with the build system of Keil Studio that uses the CMSIS-Toolbox and CMake. Using this toolchain supports CI with:
+This repository uses [CI Workflows](https://github.com/Arm-Examples/.github/blob/main/profile/CICD.md) listed below to build artifacts and verify projects. Examples are verified with the build system of Keil Studio that uses the CMSIS-Toolbox and CMake. Using this toolchain supports CI with:
 
 Tool installation based on a single vcpkg-configuration.json file for desktop and CI environments.
 CMSIS solution files (*.csolution.yml) that enable seamless builds in CI, for example using GitHub actions.
 
 CI Workflow                                                          | Description
 :--------------------------------------------------------------------|:---------------------------------------
-[Build_Variants](./.github/workflows/Build_Variants.yml)             | Ensure that everything builds; Build the different context variants: `project.build-type+target-type`
 [Test_RPS_SSE-320-U85](./.github/workflows/Test_RPS_SSE-320-U85.yml) | Build and run image with SDS data input on FVP simulation model
 [Build_RPS_AppKit-E8](./.github/workflows/Build_RPS_AppKit-E8.yml)   | Build image with SystemView enabled for testing on hardware
 [Run_RPS_AppKit-E8](./.github/workflows/Run_RPS_AppKit-E8.yml)       | Run image on hardware with SDSIO-Server and SystemView for timing analysis
+[Build_Variants](./.github/workflows/Build_Variants.yml)             | Ensure that everything builds; Build the different context variants: `project.build-type+target-type`
 
 ## Issues or Questions
 

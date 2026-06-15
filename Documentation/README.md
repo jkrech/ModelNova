@@ -38,6 +38,8 @@ run_inference<br/>▼           |  Project       | Source file `arm_executor_run
 execute<br/>▼                 | Layer AI       | Executes the ML model (the `execute` method is part of ExecuTorch).
 postprocess                   |  Project       | Source file `sds_algorithm_user.cpp` calls `postprocess()` to print the results.
 
+## Target Hardware
+
 The project runs on the [Alif AppKit-E8-AIML](https://www.keil.arm.com/boards/alif-semiconductor-appkit-e8-aiml-a-b437af7/features/).
 
 - The USB SoC interface connects to the [SDSIO-Server](https://arm-software.github.io/SDS-Framework/main/utilities.html#sdsio-server) and is used to record and play back SDS files.
