@@ -44,6 +44,7 @@ The diagram below illustrates the RPS application architecture. During algorithm
 **Test Embedded Application:**
 
 1. [Arm SDS for VS Code](https://marketplace.visualstudio.com/items?itemName=Arm.cmsis-sds) lets you capture the various data streams of the application in [SDS data files](https://arm-software.github.io/SDS-Framework/main/overview.html) for analysis.
+   
     ![SDS Data View](./Documentation/image/Arm_SDS.png)
 2. The [SDS.sdsio.yml](./RockPaperScissors/AppKit-E8_USB/SDS.sdsio.yml) configuration file defines `play:` steps for regression testing for example with [Contiguous Integration (CI)](#contiguous-integration-ci)
 
